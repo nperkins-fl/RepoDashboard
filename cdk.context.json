@@ -1,7 +1,7 @@
 {
     "dev":{
         "Authentication": {
-            "AccessToken": "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"
+            "AccessToken": "TOKEN_GOES_HERE"
         },
         "Team": {
             "TeamSlug": "software-answers-developer",
