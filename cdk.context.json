@@ -1,0 +1,21 @@
+{
+    "dev":{
+        "Authentication": {
+            "AccessToken": "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"
+        },
+        "Team": {
+            "TeamSlug": "software-answers-developer",
+            "Org": "FrontlineEducation",
+            "ExcludeRepos": [
+                "learning-designer-app",
+                "learning-designer-db",
+                "mobile-pb-parent-access",
+                "sis-qa",
+                "virtuallearningacademy-app",
+                "EST-PB",
+                "TEST-PB"
+            ],
+            "DefaultBranch": "develop" 
+        }
+    }
+}
