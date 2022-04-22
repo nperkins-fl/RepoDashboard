@@ -26,6 +26,7 @@
                     <th>Name</th>
                     <th>Last Commit</th>
                     <th>Open PRs</th>
+                    <th>Branch Count</th>
                     <th>Release Branch Exists</th>
                 </tr>
                 </thead>
@@ -41,6 +42,9 @@
                         </td>
                         <td>
                             @repo.OpenPullRequestCount
+                        </td>
+                        <td>
+                            @repo.BranchCount
                         </td>
                         <td>
                             @(repo.HasReleaseBranch ? "Y": "")

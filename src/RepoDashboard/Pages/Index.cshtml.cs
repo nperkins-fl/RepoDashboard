@@ -47,20 +47,30 @@ public class IndexModel : PageModel
 
             var openPullRequestCount = await GetOpenPullRequestCountAsync(repo.full_name);
             var hasReleaseBranch = await GetHasReleaseBranchAsync(repo.full_name);
-
+            var branchCount = await GetBranchCount(repo.full_name);
             var item = new Repository
                        {
                            Name = repo.name,
                            Url = repo.html_url,
                            LastCommitDate = lastCommitDate,
                            OpenPullRequestCount = openPullRequestCount,
-                           HasReleaseBranch = hasReleaseBranch
+                           HasReleaseBranch = hasReleaseBranch,
+                           BranchCount = branchCount
                        };
 
             list.Add(item);
         }
 
         Repositories = list.OrderBy(x => x.Name).ToList();
+    }
+
+    private async Task<int> GetBranchCount(string repository)
+    {
+        var branches = await _githubProxy.GetBranchesAsync(repository);
+
+        return branches.Count(b => b.name != "develop"
+                                   && b.name != "master"
+                                   && b.name != "main");
     }
 
     private async Task<bool> GetHasReleaseBranchAsync(string repository)

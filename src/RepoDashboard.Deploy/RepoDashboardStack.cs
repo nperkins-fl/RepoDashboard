@@ -1,6 +1,8 @@
 ﻿using Amazon.CDK;
 using Amazon.CDK.AWS.APIGateway;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.SecretsManager;
 using Constructs;
 
 namespace RepoDashboard.Deploy;
@@ -10,7 +12,8 @@ public class RepoDashboardStack : Stack
     public RepoDashboardStack(Construct scope, string id, IStackProps props)
         : base(scope, id, props)
     {
-        var environmentVariables = EnvironmentVariablesFactory.AddEnvironmentVariables(this);
+        var environmentName = System.Environment.GetEnvironmentVariable("TARGET_ENVIRONMENT") ?? "dev";
+        var environmentVariables = EnvironmentVariablesFactory.AddEnvironmentVariables(this, environmentName);
 
         var function =
             new DockerImageFunction(this,
@@ -23,6 +26,23 @@ public class RepoDashboardStack : Stack
                                         Environment = environmentVariables,
                                         Timeout = Duration.Minutes(5)
                                     });
+
+        var policyStatement = new PolicyStatement(new PolicyStatementProps
+                                                  {
+                                                      Actions = new[] { "secretsmanager:ListSecrets" },
+                                                      Resources = new []{"*"}
+                                                  });
+
+        function.AddToRolePolicy(policyStatement);
+        
+        var newSecret = new Secret(this,
+                                   "GitHubAccessToken",
+                                   new SecretProps
+                                   {
+                                       SecretName = $"{environmentName}/RepoDashboard/Authentication__AccessToken"
+                                   });
+
+        newSecret.GrantRead(function);
 
 
         var api = new LambdaRestApi(this,

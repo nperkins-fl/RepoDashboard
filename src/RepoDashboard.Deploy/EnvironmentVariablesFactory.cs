@@ -5,12 +5,15 @@ namespace RepoDashboard.Deploy;
 
 public static class EnvironmentVariablesFactory
 {
-    public static Dictionary<string, string> AddEnvironmentVariables(Stack stack)
+    private const string ScopeDelimiter = "__";
+    private const string AspnetcoreEnvironment = "ASPNETCORE_ENVIRONMENT";
+
+    public static Dictionary<string, string> AddEnvironmentVariables(Stack stack, string environmentName)
     {
         var environmentVariables = new Dictionary<string, string>();
-        var targetEnvironment = Environment.GetEnvironmentVariable("TARGET_ENVIRONMENT") ?? "dev";
+        environmentVariables.Add(AspnetcoreEnvironment, environmentName);
 
-        if (stack.Node.TryGetContext(targetEnvironment) is IDictionary context)
+        if (stack.Node.TryGetContext(environmentName) is IDictionary context)
         {
             AddDictionary(environmentVariables, context, string.Empty);
         }
@@ -29,10 +32,10 @@ public static class EnvironmentVariablesFactory
             switch (entry.Value)
             {
                 case IDictionary d:
-                    AddDictionary(environmentVariables, d, entryKey + "__");
+                    AddDictionary(environmentVariables, d, entryKey + ScopeDelimiter);
                     break;
                 case Array a:
-                    AddArray(environmentVariables, a, entryKey + "__");
+                    AddArray(environmentVariables, a, entryKey + ScopeDelimiter);
                     break;
                 case string s:
                     environmentVariables.Add(entryKey, s);
@@ -51,10 +54,10 @@ public static class EnvironmentVariablesFactory
             switch (entryValue)
             {
                 case IDictionary d:
-                    AddDictionary(environmentVariables, d, entryKey + "__");
+                    AddDictionary(environmentVariables, d, entryKey + ScopeDelimiter);
                     break;
                 case Array a:
-                    AddArray(environmentVariables, a, entryKey + "__");
+                    AddArray(environmentVariables, a, entryKey + ScopeDelimiter);
                     break;
                 case string s:
                     environmentVariables.Add(entryKey, s);
